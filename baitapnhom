@@ -1,0 +1,235 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+struct cars {
+    char plate[12]; //. BIỂN SỐ 
+    char brand[20]; //. HÃNG XE 
+    int seats;      //. CHỖ NGỒI
+    int available; // 1 = còn, 0 = cho thuê
+    long double pricePerDay;
+};
+
+//  HÀM KHAI BÁO NGUYÊN MẪU
+void themXe(cars car[], int& n);
+void inDanhSachXe(cars car[], int n);
+void timXe(cars car[], int n);
+void thueHoacTraXe(cars car[], int n);
+void sapXepXe(cars car[], int n);
+void tinhDoanhThu(cars car[], int n);
+
+// ==================== HÀM CHÍNH ====================
+int main() {
+    cars car[100] = {
+        {"51A-12345", "Toyota", 4, 1, 500000},
+        {"30B-67890", "Honda", 7, 0, 650000},
+        {"79C-99999", "VinFast", 5, 1, 700000},
+        {"59A-88888", "Poscher", 4, 0, 800000}
+    };
+
+    int n = 4;
+    int choice;
+
+    do {
+        cout << "\n===== QUAN LY XE CHO THUE =====\n";
+        cout << "1. Them xe\n";
+        cout << "2. In danh sach xe ()\n";
+        cout << "3. Tim xe theo bien so\n";
+        cout << "4. Thue / Tra xe\n";
+        cout << "5. Sap xep xe tang dan\n";
+        cout << "6. Tinh tong doanh thu du kien\n";
+        cout << "0. Thoat\n";
+        cout << "Lua chon: ";
+        cin >> choice;
+
+        while (choice < 0 || choice > 6) {
+            cout << "Nhap sai, moi nhap lai (0-6): ";
+            cin >> choice;
+        }
+
+        switch (choice) {
+        case 1: themXe(car, n); break;
+        case 2: inDanhSachXe(car, n); break;
+        case 3: timXe(car, n); break;
+        case 4: thueHoacTraXe(car, n); break;
+        case 5: sapXepXe(car, n); break;
+        case 6: tinhDoanhThu(car, n); break;
+        case 0: cout << "Cam on ban da su dung dich vu!\n"; break;
+        }
+    } while (choice != 0);
+
+    return 0;
+}
+
+//  CÁC HÀM CON CỦA VOID SAU KHI VIẾT XONG HÀM CHÍNH 
+
+//. 1. Thêm xe
+void themXe(cars car[], int& n) {
+    cars c;
+    cout << "Moi nhap bien so: ";
+    cin >> c.plate;
+
+    for (int i = 0; i < n; i++) {
+        while (strcmp(car[i].plate, c.plate) == 0) {
+            cout << "Bien so nay da ton tai, moi nhap lai: ";
+            cin >> c.plate;
+            i = 0;
+        }
+    }
+
+    cout << "Moi nhap hang xe: ";
+    cin >> c.brand;
+
+    cout << "Moi nhap so ghe: ";
+    cin >> c.seats;
+    while (c.seats <= 0 || c.seats > 30) {
+        cout << "so ghe phai lon hon 0 hoac nho hon 30: ";
+        cin >> c.seats;
+    }
+
+    cout << "Xe co san (1) hay da duoc thue (0): ";
+    cin >> c.available;
+    while (c.available != 0 && c.available != 1) {
+        cout << "Nhap sai, nhap lai (1 hoac 0): ";
+        cin >> c.available;
+    }
+
+    cout << "Nhap gia thue moi ngay: ";
+    cin >> c.pricePerDay;
+    while (c.pricePerDay < 0) {
+        cout << "Gia thue phai lon hon 0, vui long nhap lai: ";
+        cin >> c.pricePerDay;
+    }
+
+    car[n++] = c;
+    cout << "Da them xe thanh cong!\n";
+}
+
+//. 2. In danh sách xe
+void inDanhSachXe(cars car[], int n) {
+    int chon;
+    cout << "1. Xe co san\n";
+    cout << "2. Xe da duoc thue\n";
+    cout << "Lua chon: ";
+    cin >> chon;
+
+    while (chon != 1 && chon != 2) {
+        cout << "Nhap sai, moi nhap lai (1 hoac 2): ";
+        cin >> chon;
+    }
+
+    if (chon == 1) {
+        cout << "\n=== DANH SACH XE CO SAN ===\n";
+        for (int i = 0; i < n; i++) {
+            if (car[i].available == 1)
+                cout << car[i].plate << " | " << car[i].brand << " | "
+                << car[i].seats << " cho | " << car[i].pricePerDay << " VND/ngay\n";
+        }
+    }
+    else {
+        cout << "\n=== DANH SACH XE DA DUOC THUE ===\n";
+        for (int i = 0; i < n; i++) {
+            if (car[i].available == 0)
+                cout << car[i].plate << " | " << car[i].brand << " | "
+                << car[i].seats << " cho | " << car[i].pricePerDay << " VND/ngay\n";
+        }
+    }
+}
+
+//. 3. Tìm xe theo biển số
+void timXe(cars car[], int n) {
+    char bien_so[12];
+    cout << "Nhap bien so can tim: ";
+    cin >> bien_so;
+    bool found = false;
+
+    for (int i = 0; i < n; i++) {
+        if (strcmp(car[i].plate, bien_so) == 0) {
+            cout << "Tim thay xe: " << car[i].brand << " | "
+                << car[i].seats << " cho | Trang thai: "
+                << (car[i].available ? "Co san" : "Da thue")
+                << " | Gia: " << car[i].pricePerDay << " VND/ngay\n";
+            found = true;
+            break;
+        }
+    }
+
+    if (!found)
+        cout << "Khong tim thay xe voi bien so " << bien_so << endl;
+}
+
+//. 4. Thuê hoặc trả xe
+void thueHoacTraXe(cars car[], int n) {
+    char bienso[12];
+    cout << "Nhap bien so xe: ";
+    cin >> bienso;
+    bool found = false;
+
+    for (int i = 0; i < n; i++) {
+        if (strcmp(car[i].plate, bienso) == 0) {
+            found = true;
+            if (car[i].available == 1) {
+                cout << "Xe hien dang co san. Ban co muon thue khong? (y/n): ";
+                char rep;
+                cin >> rep;
+                if (rep == 'y' || rep == 'Y') {
+                    car[i].available = 0;
+                    cout << "Ban da thue xe thanh cong!\n";
+                }
+                else {
+                    cout << "Cam on ban da quan tam!\n";
+                }
+            }
+            else {
+                cout << "Xe hien dang duoc thue. Ban co muon tra xe khong? (y/n): ";
+                char rep;
+                cin >> rep;
+                if (rep == 'y' || rep == 'Y') {
+                    car[i].available = 1;
+                    cout << "Ban da tra xe thanh cong!\n";
+                }
+                else {
+                    cout << "Cam on ban da quan tam!\n";
+                }
+            }
+            break;
+        }
+    }
+
+    if (!found)
+        cout << "Khong tim thay xe voi bien so " << bienso << endl;
+}
+
+//. 5. Sắp xếp xe
+void sapXepXe(cars car[], int n) {
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (car[i].seats > car[j].seats ||
+                (car[i].seats == car[j].seats && car[i].pricePerDay > car[j].pricePerDay)) {
+                cars temp = car[i];
+                car[i] = car[j];
+                car[j] = temp;
+            }
+        }
+    }
+    cout << "\n=== DANH SACH XE SAU KHI SAP XEP ===\n";
+    for (int i = 0; i < n; i++) {
+        cout << car[i].plate << " | " << car[i].brand << " | "
+            << car[i].seats << " cho | " << car[i].pricePerDay << " VND/ngay\n";
+    }
+}
+
+//. 6. Tính doanh thu dự kiến 
+void tinhDoanhThu(cars car[], int n) {
+    long double sum = 0;
+    int day;
+    cout << "Nhap so ngay du tinh cho thue: ";
+    cin >> day;
+
+    for (int i = 0; i < n; i++) {
+        if (car[i].available == 0)
+            sum += car[i].pricePerDay;
+    }
+
+    cout << "Tong doanh thu du kien: " << (sum * day) / 1000 << " nghin dong\n";
+}
